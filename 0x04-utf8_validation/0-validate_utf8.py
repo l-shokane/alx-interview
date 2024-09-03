@@ -18,14 +18,14 @@ def validUTF8(data):
     """
     num_bytes = 0
 
-    # check if a byte is a valid continuation byte (10xxxxxx)
+
+# check if a byte is a valid continuation byte (10xxxxxx)
     continuation_byte = 0b11000000
     continuation_bits = 0b10000000
 
     for byte in data:
-        # If byte is outside the range of valid bytes [0, 255], return False
-        if byte < 0 or byte > 255:
-            return False
+        # Use only the 8 least significant bits
+        byte &= 0xFF
 
         if num_bytes == 0:
             # Determine how many bytes in this UTF-8 character
@@ -35,8 +35,8 @@ def validUTF8(data):
                 num_bytes = 2
             elif (byte >> 3) == 0b11110:  # 4-byte character
                 num_bytes = 3
-            elif (byte >> 7):
-                # 1-byte character should start with 0 (0xxxxxxx)
+            elif (byte >> 7) == 1:  # 1-byte character should start with 0
+                # (0xxxxxxx)
                 return False
                 return False
         else:
