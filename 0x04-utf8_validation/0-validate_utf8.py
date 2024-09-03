@@ -1,6 +1,16 @@
 #!/usr/bin/python3
 
 def validUTF8(data):
+    """
+    Determines if a given data set represents a valid UTF-8 encoding.
+
+    Parameters:
+    data (List[int]): A list of integers where each integer represents
+                      1 byte of data.
+
+    Returns:
+    bool: True if data is a valid UTF-8 encoding, else False.
+    """
     num_bytes = 0
 
     # check if a byte is a valid continuation byte (10xxxxxx)
