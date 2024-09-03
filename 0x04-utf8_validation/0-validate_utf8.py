@@ -1,40 +1,32 @@
-#!/usr/bin/python3
-
 def validUTF8(data):
     num_bytes = 0
 
-# Checks the first few bits of the byte.
-    first_byte = [0b11111111, 0b11111110, 0b11111100, 0b11111000, 0b11110000]
-    valid_begin_bits = [
-        0b00000000,
-        0b11000000,
-        0b11100000,
-        0b11110000,
-        0b11111000
-    ]
+    # check if a byte is a valid continuation byte (10xxxxxx)
     continuation_byte = 0b11000000
     continuation_bits = 0b10000000
 
-
-# Iterate through the data.
     for byte in data:
-        if num_bytes == 0:
-            # Find out how many bytes are in UTF-8 character.
-            for i in range(5):
-                if byte & first_byte[i] == valid_begin_bits[i]:
-                    num_bytes = i
-                    break
-# 1-byte character is valid
-            if num_bytes == 0:
-                continue
-        # If num_bytes is is more than 4 or 0, it is invalid.
-            if num_bytes == 1 or num_bytes > 4:
-                return False
-    else:
-        # Checks the continuation byte.
-        if (byte & continuation_byte) != continuation_bits:
+        # If byte is outside the range of valid bytes [0, 255], return False
+        if byte < 0 or byte > 255:
             return False
-        # Decrease the number of bytes to process
-        num_bytes -= 1
-# Everything is valid.
+
+        if num_bytes == 0:
+            # Determine how many bytes in this UTF-8 character
+            if (byte >> 5) == 0b110:  # 2-byte character
+                num_bytes = 1
+            elif (byte >> 4) == 0b1110:  # 3-byte character
+                num_bytes = 2
+            elif (byte >> 3) == 0b11110:  # 4-byte character
+                num_bytes = 3
+            elif (byte >> 7):
+                # 1-byte character should start with 0 (0xxxxxxx)
+                return False
+                return False
+        else:
+            # Check if the byte is a valid continuation byte
+            if (byte & continuation_byte) != continuation_bits:
+                return False
+            num_bytes -= 1
+
+    # If num_bytes is not zero, then we are missing continuation bytes
     return num_bytes == 0
