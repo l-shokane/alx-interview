@@ -1,8 +1,6 @@
-
 #!/usr/bin/python3
-"""
-Making change solution
-"""
+
+""" Making change solution """
 
 
 def makeChange(coins, total):
